@@ -4,6 +4,7 @@ import { ThemeProvider as NextThemesProvider } from "next-themes"
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import App from 'next/app'
 import AppSidebar from './_components/AppSidebar'
+import AppHeader from './_components/AppHeader'
 
 function Provider({children,
   ...props}) {
@@ -16,8 +17,12 @@ function Provider({children,
            {...props}>
              <SidebarProvider>
               <AppSidebar />
-             <SidebarTrigger />
-             <div>{children}</div>
+             <div className='w-full h-screen flex flex-col overflow-hidden'>
+              <AppHeader />
+              <div className='flex-1 overflow-auto'>
+              {children}
+              </div>
+              </div>
              </SidebarProvider>
       </NextThemesProvider>
   )
