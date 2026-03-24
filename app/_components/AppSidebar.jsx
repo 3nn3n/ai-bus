@@ -7,9 +7,12 @@ import { Button } from '@/components/ui/button'
 import { Sun } from 'lucide-react'
 import { Moon } from 'lucide-react'
 import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
 
 function AppSidebar() {
   const {theme, setTheme} = useTheme()
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
   return (
     <Sidebar>
       <SidebarHeader>
@@ -21,14 +24,14 @@ function AppSidebar() {
         <h2 className='font-bold text-2xl'>AI Bus</h2>
         </div>
         <div>
-          {theme === "light" ? (
+          {mounted && (theme === "light" ? (
           <Button variant="ghost" size="icon" onClick={() => setTheme("dark")}>
             <Sun />
           </Button>) : (
           <Button variant="ghost" size="icon" onClick={() => setTheme("light")}>
             <Moon />
           </Button>
-          )}
+          ))}
         </div>
         </div>
         <Button variant="outline" size="lg" className='w-full mt-8'>+ New Chat</Button>
