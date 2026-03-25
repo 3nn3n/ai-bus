@@ -20,7 +20,7 @@ export default [
     premium: false,
     enable: true,
     subModel: [
-      { name: "Gemini 2.5 Lite", premium: false, id: "gemini-2.5-lite" },
+      { name: "Gemini 2.5 Lite", premium: false, id: "gemini-2.5-flash-lite" },
       { name: "Gemini 2.5 Flash", premium: false, id: "gemini-2.5-flash" },
       { name: "Gemini 2.5 Pro", premium: true, id: "gemini-2.5-pro" },
     ],
