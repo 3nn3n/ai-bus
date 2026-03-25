@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Provider from "./provider";
 import { Poppins } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,6 +27,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
+    <ClerkProvider>
     <html
       lang="en" suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} h-full antialiased`}
@@ -36,5 +38,6 @@ export default function RootLayout({ children }) {
         </Provider>
         </body>
     </html>
+    </ClerkProvider>
   );
 }
