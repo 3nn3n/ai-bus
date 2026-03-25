@@ -1,5 +1,5 @@
 "use client"
-import React, { use } from 'react'
+import React, { use, useState } from 'react'
 import { ThemeProvider as NextThemesProvider } from "next-themes"
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 import App from 'next/app'
@@ -9,11 +9,18 @@ import { useUser } from '@clerk/nextjs'
 import { db } from '@/config/FirebaseConfig'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { useEffect } from 'react'
+import { AiSelectedModelContext } from '@/context/AiSelectedModel'
+import { DefaultModel } from '@/shared/AiModelDefaultList'
+import { User } from 'lucide-react'
+import { UserDetailContext } from '@/context/UserDetailContext'
 
 function Provider({children,
   ...props}) {
 
     const {user} = useUser();
+    const [aiSelectedModel, setAiSelectedModel] = useState(DefaultModel);
+    const [userDetail, setUserDetail] = useState();
+
     useEffect(() => {
       if (user) {
         createNewUser();
@@ -26,6 +33,9 @@ function Provider({children,
       const userSnap = await getDoc(userRef);
       if (userSnap.exists()) {
         console.log("User already exists in Firestore");
+        const userData = userSnap.data();
+        setAiSelectedModel(userData?.selectedModelPref);
+        setUserDetail(userData);
         return;
       } 
       else {
@@ -38,6 +48,8 @@ function Provider({children,
           credits: 10000,
         };
         await setDoc(userRef, newUser);
+        setAiSelectedModel(DefaultModel);
+        setUserDetail(newUser);
         console.log("New user created in Firestore");
       }
     }
@@ -51,6 +63,8 @@ function Provider({children,
             enableSystem
             disableTransitionOnChange
            {...props}>
+            <UserDetailContext.Provider value={{userDetail, setUserDetail}}>
+            <AiSelectedModelContext.Provider value={{aiSelectedModel, setAiSelectedModel}}>
              <SidebarProvider>
               <AppSidebar />
              <div className='w-full h-screen flex flex-col overflow-hidden'>
@@ -60,6 +74,8 @@ function Provider({children,
               </div>
               </div>
              </SidebarProvider>
+            </AiSelectedModelContext.Provider>
+            </UserDetailContext.Provider>
       </NextThemesProvider>
   )
 }
