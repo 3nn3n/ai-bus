@@ -16,6 +16,7 @@ import { db } from '@/config/FirebaseConfig'
 import moment from 'moment'
 import Link from 'next/link'
 import { AiSelectedModelContext } from '@/context/AiSelectedModel'
+import axios from 'axios'
 
 function AppSidebar() {
   const { theme, setTheme } = useTheme()
@@ -24,14 +25,25 @@ function AppSidebar() {
   const { user } = useUser();
   const [chatHistory, setChatHistory] = useState([]);
   const { chatHistoryTrigger } = useContext(AiSelectedModelContext);
+  const [freeRemainingMsg, setFreeRemainingMsg] = useState(0);
+  const { aiSelectedModel, setAiSelectedModel, messages, setMessages, setChatHistoryTrigger } = useContext(AiSelectedModelContext);
+
 
 
   useEffect(() => {
     if (user) {
       setChatHistory([]);
       fetchChatHistory();
+      GetRemainingTokenMessages();
     }
   }, [user, chatHistoryTrigger])
+
+  useEffect(() => {
+    if (user) {
+      GetRemainingTokenMessages();
+    }
+  }, [messages]);
+
 
   const fetchChatHistory = async () => {
     const q = query(collection(db, "chatHistory"), where("userEmail", "==", user?.primaryEmailAddress?.emailAddress));
@@ -43,18 +55,24 @@ function AppSidebar() {
   }
 
   const getLastUserMessage = (chat) => {
-      const allMessages = Object.values(chat.messages).flat();
-      const userMessages = allMessages.filter(m => m.role === "user");
-      const lastUserMessage = userMessages[userMessages.length - 1].content || null;
+    const allMessages = Object.values(chat.messages).flat();
+    const userMessages = allMessages.filter(m => m.role === "user");
+    const lastUserMessage = userMessages[userMessages.length - 1].content || null;
 
-      const lastUpdated = chat.lastUpdated || Date.now();
-      const formattedDate = moment(lastUpdated).fromNow();
+    const lastUpdated = chat.lastUpdated || Date.now();
+    const formattedDate = moment(lastUpdated).fromNow();
 
-      return {
-        chatId: chat.chatId,
-        message: lastUserMessage,
-        lastMsgDate: formattedDate,
-      }
+    return {
+      chatId: chat.chatId,
+      message: lastUserMessage,
+      lastMsgDate: formattedDate,
+    }
+  }
+
+  const GetRemainingTokenMessages = async () => {
+    const result = await axios.post("/api/user-remaining-msg");
+    console.log("Remaining token", result);
+    setFreeRemainingMsg(result?.data?.remainingToken);
   }
 
 
@@ -83,9 +101,9 @@ function AppSidebar() {
             </div>
           </div>
           {user ?
-          <Link href={'/'}>
-            <Button variant="outline" size="lg" className='w-full mt-8'>+ New Chat</Button> 
-            </Link>:
+            <Link href={'/'}>
+              <Button variant="outline" size="lg" className='w-full mt-8'>+ New Chat</Button>
+            </Link> :
             <SignIn>
               <Button variant="outline" size="lg" className='w-full mt-8'>+ New Chat</Button>
             </SignIn>}
@@ -99,12 +117,12 @@ function AppSidebar() {
             {chatHistory.map((chat, index) => (
               <Link href={`?chatId=${chat.chatId}`} key={index} className='mt-2' >
                 <div className='p-3 hover:bg-gray-100 cursor-pointer'>
-                <h2 className='text-sm text-gray-400'>{getLastUserMessage(chat).lastMsgDate}</h2>
-                <h2 className='text-lg line-clamp-1'>{getLastUserMessage(chat).message}</h2>
+                  <h2 className='text-sm text-gray-400'>{getLastUserMessage(chat).lastMsgDate}</h2>
+                  <h2 className='text-lg line-clamp-1'>{getLastUserMessage(chat).message}</h2>
                 </div>
-                <hr/>
+                <hr />
               </Link>
-            ) )}
+            ))}
           </div>
         </SidebarGroup >
       </SidebarContent>
@@ -115,7 +133,7 @@ function AppSidebar() {
               Signup/Signin</Button>
           </SignInButton> :
             <div>
-              <UsageCreditProgress />
+              <UsageCreditProgress remainingToken={freeRemainingMsg} />
               <Button className={"w-full mb-3"}>
                 <Zap />
                 <h2>Upgrade to Pro</h2>
