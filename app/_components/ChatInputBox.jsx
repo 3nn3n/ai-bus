@@ -8,12 +8,34 @@ import { useContext } from 'react'
 import { AiSelectedModelContext } from '@/context/AiSelectedModel'
 import axios from 'axios'
 import { useEffect } from 'react'
+import { v4 as uuidv4 } from 'uuid'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
+import { db } from '@/config/FirebaseConfig'
+import { useUser } from '@clerk/nextjs'
+import { useSearchParams } from 'next/navigation'
+
 
 
 
 function ChatInputBox() {
   const [userInput, setUserInput] = useState("");
-  const { aiSelectedModel, setAiSelectedModel, messages, setMessages } = useContext(AiSelectedModelContext);
+  const { aiSelectedModel, setAiSelectedModel, messages, setMessages, setChatHistoryTrigger } = useContext(AiSelectedModelContext);
+  const [chatId, setChatId] = useState();
+  const { user } = useUser();
+  const params = useSearchParams();
+
+  useEffect(() => {
+    const chatId_ = params.get("chatId");
+    if (chatId_) {
+      setChatId(chatId_);
+      GetMessages(chatId_);
+
+    } else {  
+      setMessages([]);
+    // Generate a unique chat ID when the component mounts
+    setChatId(uuidv4());
+    }
+  }, [params]);
 
   const handleSend = async () => {
     if (!userInput.trim()) return;
@@ -73,16 +95,16 @@ function ChatInputBox() {
             if (loadingIndex !== -1) {
               updated[loadingIndex] = {
                 role: "assistant",
-                content: aiResponse,
-                model,
+                content: aiResponse ?? "",
+                model: model ?? parentModel,
                 loading: false,
               };
             } else {
               // fallback if no loading msg found
               updated.push({
                 role: "assistant",
-                content: aiResponse,
-                model,
+                content: aiResponse ?? "",
+                model: model ?? parentModel,
                 loading: false,
               });
             }
@@ -99,6 +121,8 @@ function ChatInputBox() {
               {
                 role: "assistant",
                 content: "⚠️ Error fetching response.",
+                model: parentModel,
+                loading: false,
               },
             ],
           }));
@@ -108,8 +132,37 @@ function ChatInputBox() {
   };
 
   useEffect(() => {
-    console.log("Updated messages:", messages);
+    if (chatId && Object.keys(messages).length > 0) {
+      SaveMessages();
+    }
   }, [messages]);
+
+  const SaveMessages = async () => {
+    const docRef = doc(db, "chatHistory", chatId);
+
+    await setDoc(docRef, {
+      chatId: chatId,
+      userEmail: user?.primaryEmailAddress?.emailAddress ?? "",
+      messages: messages,
+      lastUpdated: Date.now(),
+    })
+
+    setChatHistoryTrigger((prev) => prev + 1);
+
+  }
+
+  const GetMessages = async (chatId) => {
+    const docRef = doc(db, "chatHistory", chatId);
+    const docSnap = await getDoc(docRef);
+    console.log("Fetched chat history:", docSnap.data());
+    const data = docSnap.data();
+    if (data && data.messages) {
+      setMessages(data.messages);
+    }
+  }
+
+
+
 
 
   return (

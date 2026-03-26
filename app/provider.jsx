@@ -21,6 +21,7 @@ function Provider({children,
     const [aiSelectedModel, setAiSelectedModel] = useState(DefaultModel);
     const [userDetail, setUserDetail] = useState();
     const[messages, setMessages] = useState({});
+    const [chatHistoryTrigger, setChatHistoryTrigger] = useState(0);
 
     useEffect(() => {
       if (user) {
@@ -65,7 +66,7 @@ function Provider({children,
             disableTransitionOnChange
            {...props}>
             <UserDetailContext.Provider value={{userDetail, setUserDetail}}>
-            <AiSelectedModelContext.Provider value={{aiSelectedModel, setAiSelectedModel, messages, setMessages}}>
+            <AiSelectedModelContext.Provider value={{aiSelectedModel, setAiSelectedModel, messages, setMessages, chatHistoryTrigger, setChatHistoryTrigger}}>
              <SidebarProvider>
               <AppSidebar />
              <div className='w-full h-screen flex flex-col overflow-hidden'>
