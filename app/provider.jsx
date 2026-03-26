@@ -20,6 +20,7 @@ function Provider({children,
     const {user} = useUser();
     const [aiSelectedModel, setAiSelectedModel] = useState(DefaultModel);
     const [userDetail, setUserDetail] = useState();
+    const[messages, setMessages] = useState({});
 
     useEffect(() => {
       if (user) {
@@ -34,7 +35,7 @@ function Provider({children,
       if (userSnap.exists()) {
         console.log("User already exists in Firestore");
         const userData = userSnap.data();
-        setAiSelectedModel(userData?.selectedModelPref);
+        setAiSelectedModel(userData?.selectedModelPref??DefaultModel);
         setUserDetail(userData);
         return;
       } 
@@ -64,7 +65,7 @@ function Provider({children,
             disableTransitionOnChange
            {...props}>
             <UserDetailContext.Provider value={{userDetail, setUserDetail}}>
-            <AiSelectedModelContext.Provider value={{aiSelectedModel, setAiSelectedModel}}>
+            <AiSelectedModelContext.Provider value={{aiSelectedModel, setAiSelectedModel, messages, setMessages}}>
              <SidebarProvider>
               <AppSidebar />
              <div className='w-full h-screen flex flex-col overflow-hidden'>

@@ -28,11 +28,11 @@ export default [
   {
     model: "DeepSeek",
     icon: "/deepseek.png",
-    premium: true,
+    premium: false,
     enable: true,
     subModel: [
-      { name: "DeepSeek R1", premium: false, id: "deepseek-r1" },
-      { name: "DeepSeek R1 0528", premium: true, id: "deepseek-r1-0528" },
+      { name: "DeepSeek R1", premium: false, id: "DeepSeek-R1" },
+      { name: "DeepSeek R1 0528", premium: true, id: "DeepSeek-R1-0528" },
     ],
   },
   {
