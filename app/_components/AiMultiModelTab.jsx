@@ -24,10 +24,14 @@ import { useEffect } from 'react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 
+
 function AiMultiModelTab() {
   const { user } = useUser();
   const [aiModelList, setAiModelList] = useState(AiModelList);
   const { aiSelectedModel, setAiSelectedModel, messages, setMessages } = useContext(AiSelectedModelContext);
+
+  
+
 
   // Add this useEffect to sync UI with context loaded from Firebase
   useEffect(() => {
@@ -126,8 +130,8 @@ function AiMultiModelTab() {
                 <div key={i} className={`p-2 rounded-md ${m.role === "user" ? "bg-orange-100 text-orange-500" : "bg-gray-200 text-gray-500"}`}>
                   {m.role === "assistant" && <span className='text-sm text-gray-400'>{model.model}</span>}
                   <div className='flex items-center gap-3'> {m.content == "Thinking..." && <><Loader className='animate-spin' /><span>Thinking...</span></>}</div>
-                  {m.content !== "Thinking..." && 
-                  <Markdown remarkPlugins={[remarkGfm]}>{m.content}</Markdown>}
+                  {m?.content !== "Thinking..." && 
+                  m?.content && <Markdown remarkPlugins={[remarkGfm]}>{m.content}</Markdown>}
                 </div>
               ))}
             </div>
