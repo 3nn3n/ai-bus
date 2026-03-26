@@ -3,6 +3,7 @@ import "./globals.css";
 import Provider from "./provider";
 import { Poppins } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col">
         <Provider>
           {children}
+          <Toaster />
         </Provider>
         </body>
     </html>

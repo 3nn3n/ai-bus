@@ -13,6 +13,7 @@ import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { db } from '@/config/FirebaseConfig'
 import { useUser } from '@clerk/nextjs'
 import { useSearchParams } from 'next/navigation'
+import { toast } from 'sonner'
 
 
 
@@ -39,6 +40,16 @@ function ChatInputBox() {
 
   const handleSend = async () => {
     if (!userInput.trim()) return;
+
+    // deduct and check token for each message sent
+    const response = await axios.post("/api/user-remaining-msg",{
+      token: 1, // Deduct 1 token for each message sent
+    });
+    const remainingToken = response?.data?.remainingToken;
+    if (remainingToken <= 0) {
+      toast.error("You have used all your free credits. Please upgrade to Pro to continue using the service.");
+      return;
+    }
 
     // 1️⃣ Add user message to all enabled models
     setMessages((prev) => {
