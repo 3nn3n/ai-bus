@@ -79,6 +79,8 @@ function AiMultiModelTab() {
     };
     setAiSelectedModel(updatedModel);
 
+    if(!user?.primaryEmailAddress?.emailAddress) return;
+
     const docRef = doc(db, "users", user?.primaryEmailAddress?.emailAddress);
     await updateDoc(docRef, { selectedModelPref: updatedModel });
   };

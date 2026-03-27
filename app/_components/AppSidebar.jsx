@@ -107,9 +107,8 @@ function AppSidebar() {
             <Link href={'/'}>
               <Button variant="outline" size="lg" className='w-full mt-8'>+ New Chat</Button>
             </Link> :
-            <SignIn>
               <Button variant="outline" size="lg" className='w-full mt-8'>+ New Chat</Button>
-            </SignIn>}
+            }
         </div>
       </SidebarHeader>
       <SidebarContent>

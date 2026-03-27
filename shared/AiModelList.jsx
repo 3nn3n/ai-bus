@@ -48,7 +48,7 @@ export default [
   {
     model: "Grok",
     icon: "/grok.png",
-    premium: false,
+    premium: true,
     enable: true,
     subModel: [
       { name: "Grok 3 Mini", premium: false, id: "grok-3-mini" },
