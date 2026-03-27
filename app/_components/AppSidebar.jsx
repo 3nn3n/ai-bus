@@ -107,9 +107,8 @@ function AppSidebar() {
             <Link href={'/'}>
               <Button variant="outline" size="lg" className='w-full mt-8'>+ New Chat</Button>
             </Link> :
-            <SignIn>
               <Button variant="outline" size="lg" className='w-full mt-8'>+ New Chat</Button>
-            </SignIn>}
+            }
         </div>
       </SidebarHeader>
       <SidebarContent>
@@ -144,7 +143,7 @@ function AppSidebar() {
                       <h2>Upgrade to Pro</h2>
                     </Button>
                   </PricingModel></div>}
-              <Button variant="ghost" className='flex gap-5'>
+              <Button variant="ghost" className='flex gap-5 w-full border-orange-400'>
                 <User2 />
                 <h2>Settings</h2>
               </Button>
