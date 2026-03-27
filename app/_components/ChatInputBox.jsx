@@ -11,7 +11,7 @@ import { useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 import { doc, getDoc, setDoc } from 'firebase/firestore'
 import { db } from '@/config/FirebaseConfig'
-import { useUser } from '@clerk/nextjs'
+import { useAuth, useUser } from '@clerk/nextjs'
 import { useSearchParams } from 'next/navigation'
 import { toast } from 'sonner'
 
@@ -24,6 +24,9 @@ function ChatInputBox() {
   const [chatId, setChatId] = useState();
   const { user } = useUser();
   const params = useSearchParams();
+  const {has} = useAuth();
+
+  const paidUser = has({plan: "unlimited_plan"});
 
   useEffect(() => {
     const chatId_ = params.get("chatId");
@@ -41,6 +44,7 @@ function ChatInputBox() {
   const handleSend = async () => {
     if (!userInput.trim()) return;
 
+    if (!paidUser) {
     // deduct and check token for each message sent
     const response = await axios.post("/api/user-remaining-msg",{
       token: 1, // Deduct 1 token for each message sent
@@ -50,6 +54,7 @@ function ChatInputBox() {
       toast.error("You have used all your free credits. Please upgrade to Pro to continue using the service.");
       return;
     }
+  }
 
     // 1️⃣ Add user message to all enabled models
     setMessages((prev) => {

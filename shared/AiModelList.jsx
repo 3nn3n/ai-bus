@@ -48,7 +48,7 @@ export default [
   {
     model: "Grok",
     icon: "/grok.png",
-    premium: true,
+    premium: false,
     enable: true,
     subModel: [
       { name: "Grok 3 Mini", premium: false, id: "grok-3-mini" },
@@ -63,16 +63,6 @@ export default [
     subModel: [
       { name: "Cohere Command A", premium: false, id: "cohere-command-a" },
       { name: "Cohere Command R 08-2024", premium: false, id: "cohere-command-r-08-2024" },
-    ],
-  },
-  {
-    model: "Llama",
-    icon: "/llama.png",
-    premium: true,
-    enable: true,
-    subModel: [
-      { name: "Llama 3.3 70B Instruct", premium: true, id: "llama-3.3-70b-instruct" },
-      { name: "Llama 4 Scout 17B 16E Instruct", premium: true, id: "llama-4-scout-17b-16e-instruct" },
     ],
   },
 ];
