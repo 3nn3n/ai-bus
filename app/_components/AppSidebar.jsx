@@ -8,7 +8,7 @@ import { Bolt, Sun, User2, Zap } from 'lucide-react'
 import { Moon } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { useEffect, useState, useContext } from 'react'
-import { SignIn, SignInButton } from '@clerk/nextjs'
+import { SignIn, SignInButton, useAuth } from '@clerk/nextjs'
 import { useUser } from '@clerk/nextjs'
 import UsageCreditProgress from './UsageCreditProgress'
 import { collection, getDocs, query, where } from 'firebase/firestore'
@@ -17,6 +17,7 @@ import moment from 'moment'
 import Link from 'next/link'
 import { AiSelectedModelContext } from '@/context/AiSelectedModel'
 import axios from 'axios'
+import PricingModel from './PricingModel'
 
 function AppSidebar() {
   const { theme, setTheme } = useTheme()
@@ -28,7 +29,9 @@ function AppSidebar() {
   const [freeRemainingMsg, setFreeRemainingMsg] = useState(0);
   const { aiSelectedModel, setAiSelectedModel, messages, setMessages, setChatHistoryTrigger } = useContext(AiSelectedModelContext);
 
+  const { has } = useAuth();
 
+  const paidUser = has({ plan: "unlimited_plan" });
 
   useEffect(() => {
     if (user) {
@@ -133,11 +136,14 @@ function AppSidebar() {
               Signup/Signin</Button>
           </SignInButton> :
             <div>
-              <UsageCreditProgress remainingToken={freeRemainingMsg} />
-              <Button className={"w-full mb-3"}>
-                <Zap />
-                <h2>Upgrade to Pro</h2>
-              </Button>
+              {!paidUser &&
+                <div><UsageCreditProgress remainingToken={freeRemainingMsg} />
+                  <PricingModel>
+                    <Button className={"w-full mb-3"}>
+                      <Zap />
+                      <h2>Upgrade to Pro</h2>
+                    </Button>
+                  </PricingModel></div>}
               <Button variant="ghost" className='flex gap-5'>
                 <User2 />
                 <h2>Settings</h2>

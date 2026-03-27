@@ -19,7 +19,7 @@ import { useContext } from 'react'
 import { AiSelectedModelContext } from '@/context/AiSelectedModel'
 import { doc, updateDoc } from 'firebase/firestore'
 import { db } from '@/config/FirebaseConfig'
-import { useUser } from '@clerk/nextjs'
+import { useAuth, useUser } from '@clerk/nextjs'
 import { useEffect } from 'react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -30,7 +30,9 @@ function AiMultiModelTab() {
   const [aiModelList, setAiModelList] = useState(AiModelList);
   const { aiSelectedModel, setAiSelectedModel, messages, setMessages } = useContext(AiSelectedModelContext);
 
-  
+  const { has } = useAuth();
+
+  const paidUser = has({ plan: "unlimited_plan" });
 
 
   // Add this useEffect to sync UI with context loaded from Firebase
@@ -93,7 +95,7 @@ function AiMultiModelTab() {
             <div className='flex items-center gap-4'>
               <Image src={model.icon} alt={model.model} width={20} height={20} />
               {model.enable && (
-                <Select value={aiSelectedModel[model.model]?.modelId} onValueChange={(value) => onSelectValueChange(model.model, value)} disabled={model.premium}>
+                <Select value={aiSelectedModel[model.model]?.modelId} onValueChange={(value) => onSelectValueChange(model.model, value)} disabled={!paidUser && model.premium}>
                   <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder="Select a model" />
                   </SelectTrigger>
@@ -107,7 +109,7 @@ function AiMultiModelTab() {
                     <SelectGroup className="px-3">
                       <SelectLabel className={"text-sm text-gray-400"}>Premium</SelectLabel>
                       {model.subModel.map((subModel, subIndex) => subModel.premium == true && (
-                        <SelectItem key={subIndex} value={subModel.id} disabled={subModel.premium}>{subModel.name}{subModel.premium && <Lock className='h-2 w-2 ml-2' />}</SelectItem>
+                        <SelectItem key={subIndex} value={subModel.id} disabled={!paidUser && subModel.premium}>{subModel.name}{!paidUser && subModel.premium && <Lock className='h-2 w-2 ml-2' />}</SelectItem>
                       ))}
                     </SelectGroup>
                   </SelectContent>
@@ -121,7 +123,7 @@ function AiMultiModelTab() {
               />}
             </div>
           </div>
-          {model.premium && model.enable && <div className='flex flex-1 items-center justify-center'>
+          {!paidUser && model.premium && model.enable && <div className='flex flex-1 items-center justify-center'>
             <Button> <Lock />Upgrade to Unlock</Button>
           </div>}
           {model.enable && <div className='flex-1 p-4 overflow-auto'>
