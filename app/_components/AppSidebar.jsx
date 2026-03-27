@@ -144,7 +144,7 @@ function AppSidebar() {
                       <h2>Upgrade to Pro</h2>
                     </Button>
                   </PricingModel></div>}
-              <Button variant="ghost" className='flex gap-5'>
+              <Button variant="ghost" className='flex gap-5 w-full border-orange-400'>
                 <User2 />
                 <h2>Settings</h2>
               </Button>
